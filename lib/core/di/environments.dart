@@ -1,4 +1,8 @@
 enum Environment {
-  mock,
-  latest
+  mock(''),
+  latest('https://jsonplaceholder.typicode.com');
+
+  const Environment(this.url);
+
+  final String url;
 }

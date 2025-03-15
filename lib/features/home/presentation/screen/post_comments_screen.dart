@@ -23,6 +23,9 @@ class PostCommentsScreen extends StatefulWidget {
 }
 
 class _PostCommentsScreenState extends State<PostCommentsScreen> {
+  static const noCommentsImageRoute = 'assets/images/no_comments_image.png';
+  static const noCommentsMsg = 'El post no contiene comentarios';
+
   late PostsBloc postsBloc;
   late FavoritesBloc favoritesBloc;
 
@@ -95,7 +98,25 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
   }
 
   Widget _buildEmptyState() {
-    return const SizedBox.shrink();
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(
+            noCommentsImageRoute,
+            scale: 2.0,
+          ),
+          const Text(
+            noCommentsMsg,
+            style: TextStyle(
+              fontWeight: FontWeight.w800,
+              color: ColorTheme.primaryColor,
+              fontSize: 18.0,
+            ),
+          )
+        ],
+      ),
+    );
   }
 
   @override
@@ -155,6 +176,10 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
               if (snapshot.data is DataSuccess<List<Comment>>) {
                 var data = snapshot.data as DataSuccess<List<Comment>>;
                 return data.data!.isNotEmpty ? _buildCommentList(comments: data.data!) : _buildEmptyState();
+              }
+
+              if (snapshot.data is DataFailed) {
+                return _buildEmptyState();
               }
 
               return const SizedBox.shrink();

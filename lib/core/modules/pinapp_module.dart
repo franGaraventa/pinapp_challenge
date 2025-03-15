@@ -19,6 +19,9 @@ class PinAppModule extends Module {
 
   @override
   void binds(Injector i) {
+    var mockPostRepository = MockPostRepositoryImpl();
+    var latestPostRepository = PostsRepositoryImpl(baseUrl: Environment.latest.url);
+
     i.addInstance(
       FavoritesBloc(
         FavoriteRepositoryImpl(
@@ -29,14 +32,10 @@ class PinAppModule extends Module {
     i.addInstance(
       PostsBloc(
         GetPostsUseCase(
-          environment == Environment.mock
-              ? MockPostRepositoryImpl()
-              : PostsRepositoryImpl(baseUrl: 'https://jsonplaceholder.typicode.com'),
+          environment == Environment.mock ? mockPostRepository : latestPostRepository,
         ),
         GetPostCommentsUseCase(
-          environment == Environment.mock
-              ? MockPostRepositoryImpl()
-              : PostsRepositoryImpl(baseUrl: 'https://jsonplaceholder.typicode.com'),
+          environment == Environment.mock ? mockPostRepository : latestPostRepository,
         ),
       ),
       config: BindConfig<PostsBloc>(

@@ -18,6 +18,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  static const headerImageRoute = 'assets/images/pin_app.svg';
+  static const noContentImageRoute = 'assets/images/no_content_image.png';
+  static const headerImageSemanticLabel = 'PinApp Logo';
+  static const headerTitle = 'Desafio Tecnico';
+  static const searchLabelText = 'Buscar Publicacion';
+
   late PostsBloc postsBloc;
   late FavoritesBloc favoritesBloc;
   final TextEditingController _searchController = TextEditingController();
@@ -33,10 +39,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
 
     postsBloc.getAllPosts();
-  }
-
-  Widget _buildLikeIcon({required int id}) {
-    return LikeIcon(isEnabled: favoritesBloc.favorites.contains(id));
   }
 
   Widget _buildPostList({required List<Post> posts}) {
@@ -70,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 subtitle: Text(posts[index].body),
-                trailing: _buildLikeIcon(id: posts[index].id),
+                trailing: LikeIcon(isEnabled: favoritesBloc.favorites.contains(posts[index].id)),
               ),
             ),
           );
@@ -83,7 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildEmptyState() {
-    return const SizedBox.shrink();
+    return Center(
+      child: Image.asset(
+        noContentImageRoute,
+        color: ColorTheme.primaryColor,
+        scale: 2.0,
+      ),
+    );
   }
 
   @override
@@ -96,12 +104,16 @@ class _HomeScreenState extends State<HomeScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SvgPicture.asset(
-                'assets/images/pin_app.svg',
-                semanticsLabel: 'PinApp Logo',
+                headerImageRoute,
+                semanticsLabel: headerImageSemanticLabel,
               ),
               const Text(
-                'Desafio Tecnico',
-                style: TextStyle(color: ColorTheme.primaryColor, fontWeight: FontWeight.bold, fontSize: 24.0),
+                headerTitle,
+                style: TextStyle(
+                  color: ColorTheme.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24.0,
+                ),
               ),
             ],
           ),
@@ -122,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     postsBloc.filter(query: query.toLowerCase());
                   },
                   decoration: const InputDecoration(
-                    labelText: 'Buscar Publicacion',
+                    labelText: searchLabelText,
                     prefixIcon: Icon(Icons.search),
                     prefixIconColor: ColorTheme.secondaryColor,
                     border: OutlineInputBorder(),

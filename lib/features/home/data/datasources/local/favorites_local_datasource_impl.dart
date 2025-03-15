@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../repositories/i_favorite_datasource.dart';
 
 class FavoritesLocalDatasourceImpl implements IFavoriteDatasource {
-
+  @override
   Future<Set<int>> getFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     List<String>? favorites = prefs.getStringList('favorites');
