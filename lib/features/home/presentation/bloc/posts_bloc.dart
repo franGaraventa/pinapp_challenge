@@ -20,12 +20,31 @@ class PostsBloc extends IBloc {
   StreamController<DataState<List<Comment>>> postCommentsController = StreamController.broadcast();
 
   Stream<DataState<List<Post>>> get postsStream => postsController.stream;
+
   Stream<DataState<List<Comment>>> get postCommentStream => postCommentsController.stream;
 
+  final _originalList = <Post>[];
+
   Future<void> getAllPosts() async {
+    _originalList.clear();
     postsController.sink.add(const DataLoading());
     var response = await _getPostsUseCase.call();
+    if (response is DataSuccess<List<Post>>) {
+      _originalList.addAll(response.data!);
+    }
     postsController.sink.add(response);
+  }
+
+  void filter({required String query}) {
+    postsController.sink.add(
+      query.isEmpty
+          ? DataSuccess(_originalList)
+          : DataSuccess(
+              _originalList.where((post) {
+                return post.title.toLowerCase().contains(query);
+              }).toList(),
+            ),
+    );
   }
 
   Future<void> getPostComments({required int id}) async {
