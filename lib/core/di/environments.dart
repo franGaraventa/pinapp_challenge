@@ -1,0 +1,4 @@
+enum Environment {
+  mock,
+  latest
+}
