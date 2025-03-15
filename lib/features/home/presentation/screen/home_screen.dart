@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 import 'package:flutter_svg/svg.dart';
@@ -7,6 +6,7 @@ import '../../../../core/modules/data_state.dart';
 import '../../../../core/utils/colors.dart';
 import '../../../../core/utils/dimensions.dart';
 import '../../domain/models/post.dart';
+import '../bloc/favorites_bloc.dart';
 import '../bloc/posts_bloc.dart';
 import '../widget/like_icon.dart';
 
@@ -19,17 +19,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late PostsBloc postsBloc;
+  late FavoritesBloc favoritesBloc;
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     postsBloc = context.read<PostsBloc>();
+    favoritesBloc = context.read<FavoritesBloc>();
+
+    favoritesBloc.favoritesController.stream.listen((_) {
+      setState(() {});
+    });
+
     postsBloc.getAllPosts();
   }
 
   Widget _buildLikeIcon({required int id}) {
-    return LikeIcon(onTap: (isEnabled) {});
+    return LikeIcon(isEnabled: favoritesBloc.favorites.contains(id));
   }
 
   Widget _buildPostList({required List<Post> posts}) {

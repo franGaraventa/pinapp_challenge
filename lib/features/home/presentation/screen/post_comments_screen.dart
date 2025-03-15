@@ -6,6 +6,7 @@ import '../../../../core/utils/colors.dart';
 import '../../../../core/utils/dimensions.dart';
 import '../../domain/models/comment.dart';
 import '../../domain/models/post.dart';
+import '../bloc/favorites_bloc.dart';
 import '../bloc/posts_bloc.dart';
 import '../widget/like_icon.dart';
 
@@ -23,12 +24,16 @@ class PostCommentsScreen extends StatefulWidget {
 
 class _PostCommentsScreenState extends State<PostCommentsScreen> {
   late PostsBloc postsBloc;
+  late FavoritesBloc favoritesBloc;
 
   @override
   void initState() {
     super.initState();
     postsBloc = context.read<PostsBloc>();
+    favoritesBloc = context.read<FavoritesBloc>();
+
     postsBloc.getPostComments(id: widget.post.id);
+    favoritesBloc.isFavorite(id: widget.post.id);
   }
 
   Widget _buildCommentList({required List<Comment> comments}) {
@@ -110,7 +115,15 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: CustomPadding.paddingXXMedium),
-              child: LikeIcon(onTap: (enabled) => {}),
+              child: StreamBuilder<bool>(
+                stream: favoritesBloc.favoritesStream,
+                builder: (context, snapshot) {
+                  return LikeIcon(
+                    onTap: (enabled) => favoritesBloc.toggleFavorite(id: widget.post.id),
+                    isEnabled: snapshot.hasData ? snapshot.data! : false,
+                  );
+                },
+              ),
             )
           ],
           title: Text(

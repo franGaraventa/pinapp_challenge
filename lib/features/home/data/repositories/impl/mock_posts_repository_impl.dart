@@ -4,10 +4,10 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../core/modules/data_state.dart';
-import '../../domain/repositories/i_posts_repository.dart';
-import '../models/comment_model.dart';
-import '../models/post_model.dart';
+import '../../../../../core/modules/data_state.dart';
+import '../../../domain/repositories/i_posts_repository.dart';
+import '../../models/comment_model.dart';
+import '../../models/post_model.dart';
 
 class MockPostRepositoryImpl extends IPostsRepository {
   @override

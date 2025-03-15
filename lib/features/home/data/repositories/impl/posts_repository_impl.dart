@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../../../../core/modules/data_state.dart';
-import '../../domain/models/comment.dart';
-import '../../domain/models/post.dart';
-import '../../domain/repositories/i_posts_repository.dart';
-import '../models/comment_model.dart';
-import '../models/post_model.dart';
+import '../../../../../core/modules/data_state.dart';
+import '../../../domain/models/comment.dart';
+import '../../../domain/models/post.dart';
+import '../../../domain/repositories/i_posts_repository.dart';
+import '../../models/comment_model.dart';
+import '../../models/post_model.dart';
 
 class PostsRepositoryImpl implements IPostsRepository {
   PostsRepositoryImpl({required this.baseUrl});
