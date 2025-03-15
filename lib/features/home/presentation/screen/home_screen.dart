@@ -18,13 +18,13 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late PostsBloc postsBloc;
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     postsBloc = context.read<PostsBloc>();
     postsBloc.getAllPosts();
-    postsBloc.getPostComments(id: 1);
   }
 
   Widget _buildLikeIcon({required int id}) {
@@ -113,8 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.all(CustomPadding.paddingXSmall),
                 child: TextField(
-                  controller: TextEditingController(),
-                  onChanged: (query) {},
+                  controller: _searchController,
+                  onChanged: (query) {
+                    postsBloc.filter(query: query.toLowerCase());
+                  },
                   decoration: const InputDecoration(
                     labelText: 'Buscar Publicacion',
                     prefixIcon: Icon(Icons.search),
