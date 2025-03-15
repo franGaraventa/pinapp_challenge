@@ -8,7 +8,7 @@ void main() {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(
     ModularApp(
-      module: PinAppModule(environment: Environment.latest),
+      module: PinAppModule(environment: Environment.mock),
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(

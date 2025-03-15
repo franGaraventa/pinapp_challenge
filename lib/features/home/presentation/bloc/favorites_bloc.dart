@@ -12,7 +12,7 @@ class FavoritesBloc extends IBloc {
 
   Stream<bool> get favoritesStream => favoritesController.stream;
 
-  var favorites = Set<int>();
+  var favorites = <int>{};
 
   Future<void> toggleFavorite({required int id}) async {
     var isFavorite = await _favoriteRepository.isFavorite(id: id);
@@ -34,7 +34,9 @@ class FavoritesBloc extends IBloc {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    favoritesController.close();
+  }
 
   @override
   Future<void> initialize() async {
