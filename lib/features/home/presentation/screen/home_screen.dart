@@ -8,6 +8,7 @@ import '../../../../core/utils/colors.dart';
 import '../../../../core/utils/dimensions.dart';
 import '../../domain/models/post.dart';
 import '../bloc/posts_bloc.dart';
+import '../widget/like_icon.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -28,14 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildLikeIcon({required int id}) {
-    var isPostLiked = false;
-    return InkWell(
-      onTap: () {},
-      child: Icon(
-        isPostLiked ? CupertinoIcons.heart_fill : CupertinoIcons.heart,
-        color: isPostLiked ? ColorTheme.secondaryColor : Colors.black,
-      ),
-    );
+    return LikeIcon(onTap: (isEnabled) {});
   }
 
   Widget _buildPostList({required List<Post> posts}) {
@@ -44,30 +38,33 @@ class _HomeScreenState extends State<HomeScreen> {
       child: ListView.separated(
         itemCount: posts.length,
         itemBuilder: (context, index) {
-          return Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(CustomBorderRadius.borderRadiusSmall),
-              border: Border.all(color: ColorTheme.primaryColor),
-              boxShadow: [
-                BoxShadow(
-                  color: ColorTheme.primaryColor.withOpacity(0.4),
-                  spreadRadius: 2,
-                  blurRadius: 4,
-                  offset: const Offset(0, 1),
-                ),
-              ],
-            ),
-            child: ListTile(
-              title: Text(
-                posts[index].title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: ColorTheme.primaryColor,
-                ),
+          return InkWell(
+            onTap: () => Modular.to.pushNamed('/post', arguments: posts[index]),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(CustomBorderRadius.borderRadiusSmall),
+                border: Border.all(color: ColorTheme.primaryColor),
+                boxShadow: [
+                  BoxShadow(
+                    color: ColorTheme.primaryColor.withOpacity(0.4),
+                    spreadRadius: 2,
+                    blurRadius: 4,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
               ),
-              subtitle: Text(posts[index].body),
-              trailing: _buildLikeIcon(id: posts[index].id),
+              child: ListTile(
+                title: Text(
+                  posts[index].title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: ColorTheme.primaryColor,
+                  ),
+                ),
+                subtitle: Text(posts[index].body),
+                trailing: _buildLikeIcon(id: posts[index].id),
+              ),
             ),
           );
         },

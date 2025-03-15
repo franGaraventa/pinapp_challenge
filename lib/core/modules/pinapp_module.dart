@@ -6,6 +6,7 @@ import '../../features/home/domain/usecases/get_post_comments_use_case.dart';
 import '../../features/home/domain/usecases/get_posts_use_case.dart';
 import '../../features/home/presentation/bloc/posts_bloc.dart';
 import '../../features/home/presentation/screen/home_screen.dart';
+import '../../features/home/presentation/screen/post_comments_screen.dart';
 import '../di/environments.dart';
 
 class PinAppModule extends Module {
@@ -18,10 +19,14 @@ class PinAppModule extends Module {
     i.addInstance(
       PostsBloc(
         GetPostsUseCase(
-          environment == Environment.mock ? MockPostRepositoryImpl() : PostsRepositoryImpl(),
+          environment == Environment.mock
+              ? MockPostRepositoryImpl()
+              : PostsRepositoryImpl(baseUrl: 'https://jsonplaceholder.typicode.com'),
         ),
         GetPostCommentsUseCase(
-          environment == Environment.mock ? MockPostRepositoryImpl() : PostsRepositoryImpl(),
+          environment == Environment.mock
+              ? MockPostRepositoryImpl()
+              : PostsRepositoryImpl(baseUrl: 'https://jsonplaceholder.typicode.com'),
         ),
       ),
       config: BindConfig<PostsBloc>(
@@ -35,6 +40,10 @@ class PinAppModule extends Module {
     r.child(
       '/',
       child: (context) => const HomeScreen(),
+    );
+    r.child(
+      '/post',
+      child: (context) => PostCommentsScreen(post: r.args.data),
     );
   }
 }
