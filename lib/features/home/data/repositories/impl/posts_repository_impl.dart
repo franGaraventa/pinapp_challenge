@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/services.dart';
+
 import '../../../../../core/modules/data_state.dart';
 import '../../../domain/models/comment.dart';
 import '../../../domain/models/post.dart';
@@ -16,6 +18,7 @@ class PostsRepositoryImpl implements IPostsRepository {
 
   static const serviceErrorMsg = 'Hubo un error al realizar el llamado';
   static const connectionErrorMsg = 'Hubo un error con la conexion';
+  static const platform = MethodChannel('com.pinapp.challenge.pinapp_challenge.service');
 
   @override
   Future<DataState<List<Post>>> getAllPosts() async {
@@ -39,17 +42,13 @@ class PostsRepositoryImpl implements IPostsRepository {
   @override
   Future<DataState<List<Comment>>> getPostComments({required int id}) async {
     try {
-      final request = await _client.getUrl(Uri.parse('$baseUrl/comments?postId=$id'));
-      final response = await request.close();
-
-      if (response.statusCode == HttpStatus.ok) {
-        final jsonString = await utf8.decoder.bind(response).join();
-        final jsonDecode = await json.decode(jsonString);
-        var list = (jsonDecode as List).map((post) => CommentModel.fromJson(post)).toList();
-        return DataSuccess(list);
-      } else {
-        return DataFailed('$serviceErrorMsg (${response.statusCode})');
-      }
+      final result = await platform.invokeMethod(
+        'getComments',
+        {'url': '$baseUrl/comments?postId=$id'},
+      );
+      final jsonDecode = await json.decode(result);
+      var list = (jsonDecode as List).map((post) => CommentModel.fromJson(post)).toList();
+      return DataSuccess(list);
     } catch (e) {
       throw Exception('$connectionErrorMsg: $e');
     }
