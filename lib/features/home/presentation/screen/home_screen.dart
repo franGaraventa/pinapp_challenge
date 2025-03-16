@@ -8,6 +8,7 @@ import '../../../../core/utils/dimensions.dart';
 import '../../domain/models/post.dart';
 import '../bloc/favorites_bloc.dart';
 import '../bloc/posts_bloc.dart';
+import '../widget/empty_state.dart';
 import '../widget/like_icon.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -84,16 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Image.asset(
-        noContentImageRoute,
-        color: ColorTheme.primaryColor,
-        scale: 2.0,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -164,7 +155,26 @@ class _HomeScreenState extends State<HomeScreen> {
 
                     if (snapshot.data is DataSuccess<List<Post>>) {
                       var data = snapshot.data as DataSuccess<List<Post>>;
-                      return data.data!.isNotEmpty ? _buildPostList(posts: data.data!) : _buildEmptyState();
+                      return data.data!.isNotEmpty
+                          ? _buildPostList(posts: data.data!)
+                          : const EmptyState(
+                              assetRoute: noContentImageRoute,
+                              assetColor: ColorTheme.primaryColor,
+                            );
+                    }
+
+                    if (snapshot.data is DataFailed) {
+                      var isRetryable = snapshot.data?.retryable ?? false;
+                      return EmptyState(
+                        assetRoute: noContentImageRoute,
+                        assetColor: ColorTheme.primaryColor,
+                        isRetryable: isRetryable,
+                        onRetryTap: isRetryable
+                            ? () {
+                                postsBloc.getAllPosts();
+                              }
+                            : null,
+                      );
                     }
 
                     return const SizedBox.shrink();

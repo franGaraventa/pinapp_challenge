@@ -1,4 +1,5 @@
 import 'package:flutter_modular/flutter_modular.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/home/data/datasources/local/favorites_local_datasource_impl.dart';
 import '../../features/home/data/repositories/impl/favorite_repository_impl.dart';
@@ -11,6 +12,7 @@ import '../../features/home/presentation/bloc/posts_bloc.dart';
 import '../../features/home/presentation/screen/home_screen.dart';
 import '../../features/home/presentation/screen/post_comments_screen.dart';
 import '../di/environments.dart';
+import '../di/shared_preferences_manager.dart';
 
 class PinAppModule extends Module {
   PinAppModule({required this.environment});
@@ -21,11 +23,11 @@ class PinAppModule extends Module {
   void binds(Injector i) {
     var mockPostRepository = MockPostRepositoryImpl();
     var latestPostRepository = PostsRepositoryImpl(baseUrl: Environment.latest.url);
-
+    i.addSingleton(() => SharedPreferencesManager.preferences);
     i.addInstance(
       FavoritesBloc(
         FavoriteRepositoryImpl(
-          favoriteDatasource: FavoritesLocalDatasourceImpl(),
+          favoriteDatasource: FavoritesLocalDatasourceImpl(preferences: i.get<SharedPreferences>()),
         ),
       )..initialize(),
     );

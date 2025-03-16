@@ -1,56 +1,55 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart';
 
 import '../../../../../core/modules/data_state.dart';
-import '../../../domain/models/comment.dart';
-import '../../../domain/models/post.dart';
 import '../../../domain/repositories/i_posts_repository.dart';
 import '../../models/comment_model.dart';
 import '../../models/post_model.dart';
 
 class PostsRepositoryImpl implements IPostsRepository {
-  PostsRepositoryImpl({required this.baseUrl});
+  PostsRepositoryImpl({required this.baseUrl, Client? client}) : _client = client ?? Client();
 
   final String baseUrl;
-  final _client = HttpClient();
+  final Client _client;
 
   static const serviceErrorMsg = 'Hubo un error al realizar el llamado';
   static const connectionErrorMsg = 'Hubo un error con la conexion';
-  static const platform = MethodChannel('com.pinapp.challenge.pinapp_challenge.service');
+  static MethodChannel platform = const MethodChannel('com.pinapp.challenge.pinapp_challenge.service');
+  static MethodChannel? mockPlatform;
 
   @override
-  Future<DataState<List<Post>>> getAllPosts() async {
+  Future<DataState<List<PostModel>>> getAllPosts() async {
     try {
-      final request = await _client.getUrl(Uri.parse('$baseUrl/posts'));
-      final response = await request.close();
+      final response = await _client.get(Uri.parse('$baseUrl/posts'));
 
       if (response.statusCode == HttpStatus.ok) {
-        final jsonString = await utf8.decoder.bind(response).join();
-        final jsonDecode = await json.decode(jsonString);
+        final jsonDecode = await json.decode(response.body);
         var list = (jsonDecode as List).map((post) => PostModel.fromJson(post)).toList();
         return DataSuccess(list);
       } else {
-        return DataFailed('Hubo un error al realizar el llamado (${response.statusCode})');
+        return DataFailed('$serviceErrorMsg (${response.statusCode})');
       }
-    } catch (e) {
-      throw Exception('Hubo un error con la conexion: $e');
+    } catch (error) {
+      return DataFailed(connectionErrorMsg, retryable: true);
     }
   }
 
   @override
-  Future<DataState<List<Comment>>> getPostComments({required int id}) async {
+  Future<DataState<List<CommentModel>>> getPostComments({required int id}) async {
     try {
-      final result = await platform.invokeMethod(
+      final result = await (mockPlatform ?? platform).invokeMethod(
         'getComments',
         {'url': '$baseUrl/comments?postId=$id'},
       );
       final jsonDecode = await json.decode(result);
       var list = (jsonDecode as List).map((post) => CommentModel.fromJson(post)).toList();
       return DataSuccess(list);
-    } catch (e) {
-      throw Exception('$connectionErrorMsg: $e');
+    } catch (error) {
+      return DataFailed(connectionErrorMsg, retryable: true);
     }
   }
 }

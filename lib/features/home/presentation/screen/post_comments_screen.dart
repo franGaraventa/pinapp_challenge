@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
 
@@ -8,6 +9,7 @@ import '../../domain/models/comment.dart';
 import '../../domain/models/post.dart';
 import '../bloc/favorites_bloc.dart';
 import '../bloc/posts_bloc.dart';
+import '../widget/empty_state.dart';
 import '../widget/like_icon.dart';
 
 class PostCommentsScreen extends StatefulWidget {
@@ -97,28 +99,6 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            noCommentsImageRoute,
-            scale: 2.0,
-          ),
-          const Text(
-            noCommentsMsg,
-            style: TextStyle(
-              fontWeight: FontWeight.w800,
-              color: ColorTheme.primaryColor,
-              fontSize: 18.0,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -175,11 +155,25 @@ class _PostCommentsScreenState extends State<PostCommentsScreen> {
 
               if (snapshot.data is DataSuccess<List<Comment>>) {
                 var data = snapshot.data as DataSuccess<List<Comment>>;
-                return data.data!.isNotEmpty ? _buildCommentList(comments: data.data!) : _buildEmptyState();
+                return data.data!.isNotEmpty
+                    ? _buildCommentList(comments: data.data!)
+                    : const EmptyState(
+                        assetRoute: noCommentsImageRoute,
+                        errorMsg: noCommentsMsg,
+                      );
               }
 
               if (snapshot.data is DataFailed) {
-                return _buildEmptyState();
+                var isRetryable = snapshot.data?.retryable ?? false;
+                return EmptyState(
+                    assetRoute: noCommentsImageRoute,
+                    isRetryable: isRetryable,
+                    errorMsg: noCommentsMsg,
+                    onRetryTap: isRetryable
+                        ? () {
+                            postsBloc.getPostComments(id: widget.post.id);
+                          }
+                        : null);
               }
 
               return const SizedBox.shrink();
