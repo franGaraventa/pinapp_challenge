@@ -8,8 +8,41 @@ Esta pantalla de detalle tambien permite al usuario darle like a un post, este v
 
 ## Estructura de la Aplicacion
 
-La aplicación se desarrolló siguiendo los principios de Clean Architecture y utilizando Bloc para la gestión del estado 
-en la capa de presentación. Además, se implementaron las siguientes tecnologías:
+La aplicación se desarrollo siguiendo los principios de Clean Architecture, con el objetivo de lograr una estructura de código mantenible, testeable y escalable. 
+Esta arquitectura promueve la separación de responsabilidades, lo que facilita la modificación y ampliación de funcionalidades en el futuro.
+
+### Capa de Presentacion (UI) con Bloc
+
+Se eligio Bloc para la gestión del estado en la capa de presentacion debido a sus ventajas en la separación de la lógica de negocio de la interfaz de usuario.
+Se implementarion dos Blocs principales: ```PostsBloc``` para el manejo relacionado a obtener los posts y el filtrado de los mismos y ```FavoritesBloc``` para la gestion de los posts
+que el usuario selecciona como favoritos.
+
+### Capa de Dominio (UseCases y Modelos)
+
+La capa de dominio se diseño para conetener la logica de negocio principal de la aplicacion independientemente de la implementacion de la UI o de la fuente de datos.
+Se definieron dos use cases: ```GetPostsUseCase``` y ```GetPostCommentsUseCase``` para encapsular la logica de obtencion de datos. Los modelos ```Post``` y ```Comment```
+representan los modelos de datos de la aplicacion y se mantienen independientes de las implementaciones especificas.
+Tambien se definieron las interfaces, la cual la capa de datos utilizara para realizar las implementaciones necesarias.
+
+La implementación de casos de uso proporciona una ventaja significativa para la evolución futura de la aplicación. En caso de que se requiera integrar un almacenamiento 
+local, como Firebase, Floor o cualquier otra base de datos, las modificaciones se limitarían a la capa de dominio, específicamente en los casos de uso. Esto preserva la estabilidad 
+de la capa de presentación, evitando la necesidad de realizar cambios en la interfaz de usuario o en la lógica de presentación. Esta separación garantiza que las decisiones de 
+almacenamiento puedan evolucionar sin afectar la experiencia del usuario, manteniendo la aplicación flexible y adaptable a nuevas tecnologías.
+
+### Capa de Datos (Repository e Implementaciones)
+
+El ```Repository``` actúa como una interfaz que define los metodos para acceder a los datos, permitiendo la flexibilidad de cambiar las fuentes de datos sin afectar a las capas superiores.
+La implementación del repository utiliza ```Platform Channel``` para comunicarse con codigo nativo (Kotlin/Swift) y obtener los comentarios, lo que permite aprovechar las capacidades especificas
+de cada plataforma. Para el almacenamiento local de los posts marcados como favoritos, se utilizo ```SharedPreferences```, una solucion simple y eficiente para datos pequeños y persistenes.
+
+Dentro de la capa de datos, se implementaron dos repositorios concretos que extienden la interfaz definida en la capa de dominio para la obtención de posts y comentarios. Esta estrategia 
+permite mantener entornos de desarrollo separados, facilitando las pruebas y la implementación de funcionalidades.
+
+Se configuraron dos entornos distintos: un entorno de pruebas (mock) y un entorno de producción (latest). En el entorno de pruebas, los datos se simulan consumiendo archivos JSON 
+almacenados localmente en los assets del proyecto. Esto agiliza el desarrollo y las pruebas unitarias, permitiendo iterar rápidamente sin depender de servicios externos.
+
+En el entorno de producción, los repositorios realizan llamadas reales a los servicios, asegurando la integración con los datos actualizados. Esta separación de entornos ofrece 
+flexibilidad y control durante el desarrollo, permitiendo realizar pruebas exhaustivas y garantizar la estabilidad de la aplicación en producción.
 
 - [Flutter Modular](https://pub.dev/packages/flutter_modular) utilizado para manejar la injeccion de dependencias como asi tambien la navegacion.
 - Para consumo de servicios del lado de Dart se utilizo el paquete [http](https://pub.dev/packages/http). Para el lado nativo, en android se utilizo [okHttp](https://square.github.io/okhttp/), 
