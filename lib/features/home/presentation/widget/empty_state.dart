@@ -33,10 +33,12 @@ class EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Image.asset(
-            assetRoute,
-            scale: assetScale,
-            color: assetColor,
+          Expanded(
+            child: Image.asset(
+              assetRoute,
+              scale: assetScale,
+              color: assetColor,
+            ),
           ),
           errorMsg.isNotEmpty
               ? Text(
