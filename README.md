@@ -50,6 +50,7 @@ en iOS no fue necesario agregar ninguna dependencia para el manejo de servicios.
 - Para el almacenamiento local se utilizo [SharedPreferences](https://pub.dev/packages/shared_preferences).
 - Para el manejo de unit test, se utilizo [mockito](https://pub.dev/packages/mockito) y [mocktail](https://pub.dev/packages/mocktail) para la generacion de mocks. Al utilizar anotaciones para la generacion de mocks tambien
 se utilizo [build_runner](https://pub.dev/packages/build_runner)
+- La aplicacion puede ser utilizada tanto en Lanscape como en Portrait.
 
 ## Pantalla de Posts
 
